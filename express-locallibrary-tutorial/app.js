@@ -5,8 +5,22 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// Set up mongoose connection
+var mongoose = require('mongoose')
+var mongoDBUser = 'lyett';
+var mongoDBUserPassword = 'P@ssw0rd';
+var mongoDB = 'mongodb://<mongoDBUser>:<mongoDBUserPassword>@ds247327.mlab.com:47327/local_librarydb';
+  mongoose.connect(mongoDB,{
+    useMongoClient: true
+  });
+  mongoose.Promise = global.Promise;
+  var db = mongoose.connection;
+  db.on('error', console.error.bind(console,'MongoDB connection error:'));
+
+
 var index = require('./routes/index');
 var users = require('./routes/users');
+var cool = require('./routes/cool')
 
 var app = express();
 
@@ -24,6 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/users/cool',cool);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
