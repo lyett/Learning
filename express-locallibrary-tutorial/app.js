@@ -7,9 +7,7 @@ var bodyParser = require('body-parser');
 
 // Set up mongoose connection
 var mongoose = require('mongoose')
-var mongoDBUser = 'lyett';
-var mongoDBUserPassword = 'P@ssw0rd';
-var mongoDB = 'mongodb://<mongoDBUser>:<mongoDBUserPassword>@ds247327.mlab.com:47327/local_librarydb';
+var mongoDB = 'mongodb://lyett:P@ssw0rd@ds247327.mlab.com:47327/local_librarydb';
   mongoose.connect(mongoDB,{
     useMongoClient: true
   });
