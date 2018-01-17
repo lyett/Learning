@@ -41,8 +41,59 @@ exports.book_list = function(req, res, next) {
 };
 
 // Display detail page for a specific book.
-exports.book_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book detail: ' + req.params.id);
+exports.book_detail = function(req, res, next) {
+
+    async.parallel({
+        book: function(callback) {
+
+            Book.findById(req.params.id)
+              .populate('author')
+              .populate('genre')
+              .exec(callback);
+        },
+        book_instance: function(callback) {
+
+            BookInstance.find({ 'book': req.params.id })
+            .exec(callback);
+          },
+        }, function(err, results) {
+            if (err) { return next(err); }
+            if (results.book==null) { // No results.
+                var err = new Error('Book not found');
+                err.status = 404;
+                return next(err);
+            }
+            // Successful, so render.
+            res.render('book_detail', { title: 'Title', book:  results.book, book_instances: results.book_instance } );
+        });
+    
+    };
+
+// Display detail page for a specific Genre.
+exports.genre_detail = function(req, res, next) {
+
+    async.parallel({
+        genre: function(callback) {
+            Genre.findById(req.params.id)
+              .exec(callback);
+        },
+
+        genre_books: function(callback) {
+          Book.find({ 'genre': req.params.id })
+          .exec(callback);
+        },
+
+    }, function(err, results) {
+        if (err) { return next(err); }
+        if (results.genre==null) { // No results.
+            var err = new Error('Genre not found');
+            err.status = 404;
+            return next(err);
+        }
+        // Successful, so render
+        res.render('genre_detail', { title: 'Genre Detail', genre: results.genre, genre_books: results.genre_books } );
+    });
+
 };
 
 // Display book create form on GET.
